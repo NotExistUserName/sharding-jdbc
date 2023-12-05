@@ -71,4 +71,6 @@ spring:
           master-data-source-name: master
           slave-data-source-names:
             - slave
-
+    props:
+      sql:
+        show: true

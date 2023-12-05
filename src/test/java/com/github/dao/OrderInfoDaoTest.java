@@ -3,6 +3,7 @@ package com.github.dao;
 import com.github.BaseTest;
 import com.github.repository.dao.OrderInfoDao;
 import com.github.repository.entity.OrderInfo;
+import org.apache.shardingsphere.api.hint.HintManager;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -17,7 +18,21 @@ public class OrderInfoDaoTest extends BaseTest {
     private OrderInfoDao orderInfoDao;
 
     @Test
-    public void queryOrderInfo() {
+    public void testQueryOrderInfoSlave() {
         System.out.println(orderInfoDao.lambdaQuery().eq(OrderInfo::getOrderId, 1).one());
+    }
+
+    @Test
+    public void queryOrderInfo() {
+        try (HintManager hintManager = HintManager.getInstance()) {
+            hintManager.setMasterRouteOnly();
+            System.out.println(orderInfoDao.lambdaQuery().eq(OrderInfo::getOrderId, 1).one());
+        }
+        System.out.println(orderInfoDao.lambdaQuery().eq(OrderInfo::getOrderId, 2).one());
+    }
+
+    @Test
+    public void testTransaction() {
+        orderInfoDao.saveUserOrder();
     }
 }
